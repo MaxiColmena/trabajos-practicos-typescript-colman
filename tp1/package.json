@@ -1,0 +1,22 @@
+{
+  "name": "tp1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ej1": "node ej1.ts",
+    "ej2": "node ej2.ts",
+    "ej3": "node ej3.ts",
+    "ej4": "node ej4.ts",
+    "ej5": "node ej5.ts"
+  }, 
+  
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
