@@ -33,6 +33,23 @@ class Producto {
             throw new Error(`No se puede vender ${this.nombre} ya que solo no suficiente hay en stock`)
         }        
     }
+    
+    aplicarDescuento(porcentaje: number): number {
+        if (porcentaje < 0 || porcentaje > 100){
+            throw new Error(`El porcentaje de descuento debe estar entre 0 y 100`)
+        }
+
+        //El descuento se aplica sobre el precio actual del producto, no sobre el precio original
+        this.precio = this.precio - (this.precio * (porcentaje / 100));
+        return this.precio;
+    }
 }
 
+// Prueba si funciona 
 const miProducto = new Producto("Chocolate", 1000, "Comidas", 10);
+
+console.log(miProducto.describir()); //Este es el estado inicial
+
+console.log(miProducto.aplicarDescuento(10)); // Aplica un descuento del 10%
+console.log(miProducto.describir()); // Muestra el estado después del descuento
+
