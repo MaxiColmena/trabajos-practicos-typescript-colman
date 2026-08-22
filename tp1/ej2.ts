@@ -1,4 +1,4 @@
-class Titular {
+class CuentaBancaria {
   //atributos
   readonly nombre: string;
   private saldo: number;
@@ -12,29 +12,38 @@ class Titular {
   }
   //metodos
   depositar(monto: number){
-    if (monto >= 0) {
+    if (monto <= 0) {
         // a chekear
-      const miHistorial = this.historial.push(this.saldo += monto);
+        throw new Error("No se puede menor a cero");
     } else {
-      throw new Error("No se puede menor a cero");
+        this.saldo += monto;
+        this.historial.push(` Se Depósito: +${monto}. El nuevo saldo es de: ${this.saldo}`)
     }
   }
-  retirar(monto: number): number | void {
-    if (monto > this.saldo && monto <= 0){
-        return (this.saldo -= monto)
+  retirar(monto: number): void { 
+    if (monto > this.saldo || monto <= 0){
+        throw new Error("No se puede retirar montos mayores a su saldo o montos negativos")
     } else {
-        return console.log("OK")
+        this.saldo -= monto
+        this.historial.push(`Retiro exitoso de: ${monto}, el nuevo saldo es de: ${this.saldo}`)
     };
   }
   consultarSaldo(): number {
-    let MiSaldo = this.saldo
-    
-    return MiSaldo
+    return this.saldo
+  }
+  obtenerHistorial(): string[]{
+    return [...this.historial];
   }
 }
 
-const yoTitular = new Titular("Lucas", 2222, { deposito: 1222 });
+const yoTitular = new CuentaBancaria("Lucas", 2222);
+
+// Hacemos que la cuenta tenga actividad antes de consultar
+yoTitular.depositar(500);
+yoTitular.retirar(100);
  
 console.log(`Tu saldito es: ${yoTitular.consultarSaldo()}`)
 
 console.log(`El nombre del titular es: ${yoTitular.nombre}`)
+
+console.log(`El historial del titular es: ${yoTitular.obtenerHistorial()}`)
