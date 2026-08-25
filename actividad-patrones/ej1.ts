@@ -29,9 +29,15 @@ class Inventario {
         this.equipos.push(nuevoEquipo);
     }
     
-    public listarEquipo(): Equipo[]{ //acá observamos los equipos guardados
+    public listarEquipos(): Equipo[]{ //acá observamos los equipos guardados
         return this.equipos;
     }
 }
 
-const inventario =  Inventario
+const inventario =  Inventario.obtenerInstancia();
+
+// Agregamos un equipo
+inventario.agregarEquipo("Notebook HP", "Portátil", "disponible");
+
+// Mostramos la lista en la consola
+console.log(inventario.listarEquipos());
