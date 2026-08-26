@@ -29,8 +29,39 @@ class Empleado {
     }
 }
 
+class EmpleadoPorHoras extends Empleado{
+    private horasTrabajadas: number 
+    private valorHora: number
+    
+    constructor(nombre: string, antiguedad: number, horasTrabajadas: number, valorHora: number){
+        super(nombre, antiguedad);
+        this.horasTrabajadas = horasTrabajadas;
+        this.valorHora = valorHora
+    }
+
+    calcularSueldo(): number {
+        return this.horasTrabajadas * this.valorHora
+    }
+}
+
+class EmpleadoPorComision extends Empleado{
+    private ventasDelMes: number 
+    private porcentajeComision: number
+
+    constructor( nombre: string, antiguedad: number, ventasDelMes: number, porcentajeComision: number){
+        super(nombre, antiguedad);
+        this.ventasDelMes = ventasDelMes;
+        this.porcentajeComision = porcentajeComision;
+    }
+
+    calcularSueldo(): number {
+        return this.ventasDelMes * (this.porcentajeComision / 100)
+    }
+}
+
 const empleado = new EmpleadoFijo("Maxi", 10, 1000000)
 
 console.log(`tu sueldo es: ${empleado.calcularSueldo()}`)
 
 console.log(empleado.describir());
+
