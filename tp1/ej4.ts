@@ -67,18 +67,18 @@ const equipo: Empleado[] = [
     new EmpleadoPorComision("Marcos", 10, 2000000, 10)
 ];
 
-// Función externa que recibe un arreglo de Empleados
+// Recorremos el equipo sin preguntar de qué tipo es cada empleado.
+// El polimorfismo en acción: no nos importa si es fijo, por horas o por comisión,
+// a todos les pedimos lo mismo y cada uno responde con su propia cuenta.
+for (const trabajador of equipo) {
+    console.log(`${trabajador.describir()} | calcularSueldo(): ${trabajador.calcularSueldo()}`);
+}
+
+// Función externa que recibe un arreglo de Empleados y devuelve el total a pagar
 function calcularNomina(empleados: Empleado[]): number {
     let totalNomina = 0;
 
-    // Recorremos cada empleado de la lista
     for (const trabajador of empleados) {
-        
-        // El polimorfismo en acción: no nos importa si es fijo, por horas o por comisión.
-        // A todos les pedimos lo mismo y cada uno responde con su propia matemática.
-        console.log(trabajador.describir());
-        
-        // Sumamos el sueldo de este trabajador al total general
         totalNomina += trabajador.calcularSueldo();
     }
 

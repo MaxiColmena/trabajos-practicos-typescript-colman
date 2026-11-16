@@ -20,6 +20,9 @@ class Producto {
         return this.stock >= cantidad;
     }
 
+    // Elegí lanzar un Error en vez de mostrar un mensaje porque así quien llama al metodo
+    // se entera de que la venta no se hizo y puede decidir qué hacer (con un try/catch).
+    // Si solo se mostrara un console.log, el programa seguiría como si la venta hubiera salido bien.
     venderUnidades(cantidad: number): void {
         if (cantidad <= 0) {
             throw new Error("La cantidad a vender debe ser mayor a cero");
