@@ -254,6 +254,8 @@ jobs:
       - run: npm test
 ```
 
+> **Nota:** GitHub Actions solo lee los workflows que están en `.github/workflows/` en la raíz del repositorio. Como este trabajo está dentro de una subcarpeta del repo de la materia, el archivo de `demo_practica/.github/` no se ejecutaba. Por eso se agregó `.github/workflows/pruebas-tlp4-u4.yml` en la raíz, con los mismos pasos pero usando `working-directory: tlp4-u4-intro-calidad-y-pruebas-de-software/demo_practica` y filtrando por `paths` para que solo corra cuando cambia este trabajo.
+
 ### Análisis del flujo:
 1. **`actions/checkout@v4`**: Clona el código del repositorio en el contenedor virtual limpio.
 2. **`actions/setup-node@v4`**: Instala y configura la versión de Node.js estipulada (versión 24).
@@ -318,6 +320,12 @@ Las pruebas manuales tienden a concentrarse en los flujos principales y en los c
 
 ### 9. ¿Por qué se vuelven a ejecutar todas las pruebas después de corregir el código?
 Para verificar no solo que el error puntual que motivó la corrección haya quedado resuelto, sino fundamentalmente para cerciorarse de que el nuevo código no haya roto ninguna de las funcionalidades preexistentes (prevención de regresiones colaterales).
+
+### 10. ¿Qué diferencia hay entre una prueba unitaria y una de integración?
+La prueba unitaria verifica una sola pieza de comportamiento aislada, en este caso `calcularPrecioFinal`, llamándola directamente con distintos valores. La de integración verifica que varias partes funcionen juntas: en `tests/api.test.ts` la petición pasa por Express, el middleware de JSON, la ruta, el servicio y el manejo de errores que transforma el `RangeError` en un 400. Una función puede andar bien sola y aun así fallar la integración (por ejemplo, si la ruta no captura el error y responde 500).
+
+### 11. ¿Qué diferencia existe entre `npm test` y `npm run typecheck`?
+`npm test` ejecuta `vitest run`, o sea corre el código y compara los resultados con lo esperado (comprueba comportamiento). `npm run typecheck` ejecuta `tsc --noEmit`, que analiza los tipos sin ejecutar nada ni generar JavaScript. Node 22.18+ ejecuta los `.ts` eliminando los tipos pero sin revisarlos, así que un error de tipos puede pasar desapercibido si solo se corren los tests; y al revés, el typecheck no detecta un cálculo mal hecho. Por eso se usan las dos.
 
 ---
 
