@@ -1,20 +1,26 @@
 // El contrato del sistema NUEVO
 // Nuestro sistema moderno espera que los inventarios funcionen obligatoriamente así:
+interface Equipo {
+  nombre: string;
+  tipo: string;
+  estado: string;
+}
+
 interface Inventario {
   agregarEquipo(nombre: string, tipo: string, estado: string): void;
-  listarEquipos(): any[];
+  listarEquipos(): Equipo[];
 }
 
 class InventarioViejo {
-  private items: any[] = [];
+  private items: Equipo[] = [];
 
   // Recibe un objeto cualquiera y lo guarda
-  public agregarItem(item: any): void {
+  public agregarItem(item: Equipo): void {
     this.items.push(item);
   }
 
   // Método auxiliar para poder ver qué hay guardado
-  public obtenerItems(): any[] {
+  public obtenerItems(): Equipo[] {
     return this.items;
   }
 }
@@ -33,7 +39,7 @@ class AdaptadorInventario implements Inventario {
   // Cumplimos con el contrato del sistema nuevo
   public agregarEquipo(nombre: string, tipo: string, estado: string): void {
     // traducimos por dentro los datos para que el sistema anterior los entienda
-    const objetoAdaptado = {
+    const objetoAdaptado: Equipo = {
       nombre: nombre,
       tipo: tipo,
       estado: estado
@@ -43,7 +49,7 @@ class AdaptadorInventario implements Inventario {
   }
 
   // Cumplimos con el contrato
-  public listarEquipos(): any[] {
+  public listarEquipos(): Equipo[] {
     // y por dentro pedimos la información al sistema VIEJO
     return this.inventarioViejo.obtenerItems();
   }

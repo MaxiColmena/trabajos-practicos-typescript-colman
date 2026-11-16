@@ -1,0 +1,17 @@
+{
+  "name": "tp1-pilares-poo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ej1": "node ej1.ts",
+    "ej2": "node ej2.ts",
+    "ej3": "node ej3.ts",
+    "ej4": "node ej4.ts",
+    "ej5": "node ej5.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

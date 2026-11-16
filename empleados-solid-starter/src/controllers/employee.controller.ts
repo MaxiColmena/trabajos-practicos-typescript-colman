@@ -1,24 +1,21 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { EmployeeService } from '../services/employeeService';
-import { EmployeeMongoRepository } from '../repository/employee.mongo.repository';
+import { NotFoundError } from '../errorHandler/httpError';
 
 export class EmployeeController {
-  private employeeService: EmployeeService;
+  private readonly employeeService: EmployeeService;
 
-  constructor() {
-    // 1. Instanciamos el repositorio específico de MongoDB
-    const mongoRepository = new EmployeeMongoRepository();
-    
-    // 2. Se lo inyectamos al servicio pasándolo como argumento
-    this.employeeService = new EmployeeService(mongoRepository);
+  // DIP: el controller recibe el servicio ya armado, no lo crea por dentro
+  constructor(employeeService: EmployeeService) {
+    this.employeeService = employeeService;
   }
 
   // Usamos arrow functions para no perder el contexto de 'this' en Express
-  public create = async (req: Request, res: Response) => {
+  public create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, position, baseSalary, yearsOfService } = req.body;
 
-      // 1. Validaciones HTTP: Nos aseguramos de que el cliente mandó lo que necesitamos
+      // Validaciones HTTP: nos aseguramos de que el cliente mandó lo que necesitamos
       if (!name || !position) {
         return res.status(400).json({ message: 'Nombre y puesto son obligatorios' });
       }
@@ -31,55 +28,52 @@ export class EmployeeController {
         return res.status(400).json({ message: 'La antigüedad debe ser un entero mayor o igual a 0' });
       }
 
-      // 2. Le pasamos los datos limpios al Servicio para que haga la magia
-      const employee = await this.employeeService.createEmployee(req.body);
-      
-      // 3. Devolvemos el resultado al cliente
+      // Solo pasamos los campos permitidos (no aceptamos finalSalary desde el cliente)
+      const employee = await this.employeeService.createEmployee({ name, position, baseSalary, yearsOfService });
       return res.status(201).json(employee);
-    } catch (error: any) {
-      return res.status(500).json({ message: error.message || 'Error interno del servidor' });
+    } catch (error) {
+      next(error);
     }
   };
 
-  public getAll = async (req: Request, res: Response) => {
+  public getAll = async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const employees = await this.employeeService.getAllEmployees();
       return res.json(employees);
     } catch (error) {
-      return res.status(500).json({ message: 'Error interno del servidor' });
+      next(error);
     }
   };
 
-  public getById = async (req: Request, res: Response) => {
+  public getById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const employee = await this.employeeService.getEmployeeById(req.params.id as string);
-      
+      const employee = await this.employeeService.getEmployeeById(String(req.params.id));
+
       if (!employee) {
-        return res.status(404).json({ message: 'Empleado no encontrado' });
+        throw new NotFoundError();
       }
-      
+
       return res.json(employee);
     } catch (error) {
-      return res.status(500).json({ message: 'Error interno del servidor' });
+      next(error);
     }
   };
 
-  public update = async (req: Request, res: Response) => {
+  public update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const updatedEmployee = await this.employeeService.updateEmployee(req.params.id as string, req.body);
+      const updatedEmployee = await this.employeeService.updateEmployee(String(req.params.id), req.body);
       return res.json(updatedEmployee);
-    } catch (error: any) {
-      // Capturamos el error que lanzamos en el servicio 
-      return res.status(404).json({ message: error.message });
+    } catch (error) {
+      next(error);
     }
   };
 
-  public delete = async (req: Request, res: Response) => {
+  public delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.employeeService.deleteEmployee(req.params.id as string);
+      await this.employeeService.deleteEmployee(String(req.params.id));
       return res.json({ message: 'Empleado eliminado con éxito' });
-    } catch (error: any) {
-      return res.status(404).json({ message: error.message });
+    } catch (error) {
+      next(error);
     }
   };
 }

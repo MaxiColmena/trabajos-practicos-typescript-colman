@@ -8,6 +8,7 @@ class CuentaBancaria {
   constructor(nombre: string, saldo: number) {
     this.saldo = saldo;
     this.nombre = nombre;
+    this.historial.push(`Apertura de cuenta con saldo inicial de: ${saldo}`);
 
   }
   //metodos

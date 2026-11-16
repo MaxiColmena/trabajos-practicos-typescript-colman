@@ -26,7 +26,9 @@ El sistema gestiona empleados y calcula su salario final de manera automática b
 ---
 
 ## Arquitectura: ¿Qué hicimos, por qué y para qué?
-Dividimos el proyecto en capas separadas: `controllers`, `routes`, `services`, `repository` y `models`.
+Dividimos el proyecto en capas separadas: `controllers`, `routes`, `services`, `repository`, `models` y `errorHandler`.
+
+El `errorHandler` es un middleware de Express que centraliza el manejo de errores: los controllers solo llaman a `next(error)` y este middleware decide la respuesta (404 si el empleado no existe, 500 para errores inesperados).
 
 *   **¿Por qué lo hicimos?** Para aplicar **SOLID**, principalmente el **Principio de Responsabilidad Única (SRP)** (logrando que cada archivo tenga una sola tarea) y el **Principio de Inversión de Dependencias (DIP)** (aislando nuestro código de herramientas externas como MongoDB).
 *   **¿Para qué sirve esto?** Para tener un código mucho más ordenado, fácil de leer, escalable y preparado para trabajar en equipo bajo metodologías ágiles, evitando conflictos cuando varios desarrolladores editan el proyecto.

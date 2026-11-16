@@ -76,41 +76,58 @@ export class EmployeeService {
 
 Capa 4: El Controlador (controllers/employee.controllers.ts)
 Qué hace: Es el "Director de Tráfico". Recibe la petición del usuario (req), revisa que no falten datos, le pasa los datos al Servicio para que haga la magia, y le devuelve la respuesta (res) al usuario.
-Por qué se separó: Para que Express y la web no se mezclen con las matemáticas. Aquí es donde conectamos las piezas instanciando las clases.
+Por qué se separó: Para que Express y la web no se mezclen con las matemáticas. El controlador recibe el Servicio por constructor (inyección de dependencias), así no depende de cómo se crea.
 
 Fracción de ejemplo:
 
 export class EmployeeController {
-  private employeeService: EmployeeService;
+  private readonly employeeService: EmployeeService;
 
-  constructor() {
-    // ACÁ OCURRE LA MAGIA: 
-    // 1. Creamos la conexión real a Mongo
-    const mongoRepository = new EmployeeMongoRepository();
-    // 2. Se la pasamos (inyectamos) al Servicio
-    this.employeeService = new EmployeeService(mongoRepository);
+  constructor(employeeService: EmployeeService) {
+    // El servicio llega ya armado desde afuera (DIP)
+    this.employeeService = employeeService;
   }
 
-  public create = async (req: Request, res: Response) => {
+  public create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // VALIDACIONES HTTP (Responsabilidad única del controlador)
       if (!req.body.name || !req.body.position) {
-        return res.status(400).json({ message: 'Nombre y puesto obligatorios' });
+        return res.status(400).json({ message: 'Nombre y puesto son obligatorios' });
       }
 
       // Llamamos al cerebro (Servicio)
       const employee = await this.employeeService.createEmployee(req.body);
-      
+
       // Respondemos al cliente
       return res.status(201).json(employee);
     } catch (error) {
-      return res.status(500).json({ message: 'Error interno' });
+      // No decidimos acá la respuesta: se la pasamos al errorHandler
+      next(error);
     }
   };
 }
 
-Capa 5: Las Rutas y el Servidor (routes/ y server.ts)
-Qué hace: Las rutas solo emparejan una URL (ej: /employees) con una función del Controlador. El archivo server.ts ahora solo arranca la aplicación.
+Capa 5: Las Rutas (routes/employee.routes.ts)
+Qué hace: Arma las dependencias (repositorio -> servicio -> controlador) y empareja cada URL (ej: /employees) con una función del Controlador.
+
+const employeeRepository = new EmployeeMongoRepository();
+const employeeService = new EmployeeService(employeeRepository);
+const employeeController = new EmployeeController(employeeService);
+
+Capa 6: El Manejador de Errores (errorHandler/)
+Qué hace: Es un middleware de Express que recibe todos los errores que los controladores pasan con next(error).
+Por qué se separó: Para no repetir el mismo try/catch con res.status(500) en cada controlador. Si el error es un NotFoundError responde 404 con su mensaje; cualquier otro error se registra en consola y responde 500 "Error interno del servidor", igual que el servidor original.
+
+export function errorHandler(error: unknown, _req: Request, res: Response, _next: NextFunction) {
+  if (error instanceof HttpError) {
+    return res.status(error.status).json({ message: error.message });
+  }
+  console.error(error);
+  return res.status(500).json({ message: 'Error interno del servidor' });
+}
+
+Capa 7: El Servidor (server.ts)
+Qué hace: Solo arranca la aplicación: middlewares, rutas, errorHandler y conexión a la base.
 Por qué se separó: El archivo principal quedó completamente limpio. Si entra un programador nuevo, en 10 segundos entiende cómo arranca el proyecto.
 
 Fracción de ejemplo (server.ts):
@@ -121,8 +138,13 @@ app.use(express.json());
 // Delegamos el tráfico a nuestro archivo de rutas
 app.use('/employees', employeeRouter);
 
-const PORT = 3000;
-app.listen(PORT, () => console.log('Servidor arriba'));
+// El manejador de errores siempre va después de las rutas
+app.use(errorHandler);
+
+// Primero conectamos a MongoDB y después levantamos el servidor
+db.connect().then(() => {
+  app.listen(PORT, () => console.log(`Servidor escuchando en http://localhost:${PORT}`));
+});
 
 3. Decisiones de Infraestructura (Docker)
 Se decidió utilizar Docker (a través del archivo docker-compose.yml) para aislar la base de datos del entorno local de la computadora.

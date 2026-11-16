@@ -64,7 +64,7 @@ const equipo: Empleado[] = [
     
     new EmpleadoPorHoras("Mateo", 10, 100, 1000),
 
-    new EmpleadoPorComision("Marcos", 10, 200, 2000)
+    new EmpleadoPorComision("Marcos", 10, 2000000, 10)
 ];
 
 // Función externa que recibe un arreglo de Empleados

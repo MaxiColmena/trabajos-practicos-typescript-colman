@@ -1,0 +1,17 @@
+{
+  "name": "actividad-solid",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01-srp": "node ejercicios/01-srp.ts",
+    "02-ocp": "node ejercicios/02-ocp.ts",
+    "03-lsp": "node ejercicios/03-lsp.ts",
+    "04-isp": "node ejercicios/04-isp.ts",
+    "05-dip": "node ejercicios/05-dip.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

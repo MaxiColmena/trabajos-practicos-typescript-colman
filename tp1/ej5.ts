@@ -49,11 +49,28 @@ class Persona {
 }
 
 // Ponemos a prueba la función pasándole nuestra persona
-const persona = new Persona( 45050623,"Maxi Colman" );
-persona.edad = 22
-persona.email = "maximojcolman02@gmail.com"
+const persona = new Persona(45050623, "Maxi Colman");
+persona.edad = 22;
+persona.email = "maxi@example.com";
 
-console.log(persona)
+// Leemos con los getters (no se expone el dni privado)
+console.log(`Edad: ${persona.edad}`);
+console.log(`Email: ${persona.email}`);
+console.log(`¿Es mayor de edad?: ${persona.esMayorDeEdad}`);
+console.log(persona.datosPublicos);
 
-persona.esMayorDeEdad
-//"maximojcolman02@gmail.com"
+// Probamos que los setters validen los datos
+try {
+    persona.edad = 150;
+} catch (error) {
+    console.log(`Error: ${(error as Error).message}`);
+}
+
+try {
+    persona.email = "correo-sin-arroba";
+} catch (error) {
+    console.log(`Error: ${(error as Error).message}`);
+}
+
+// Los valores anteriores no cambiaron
+console.log(`Edad: ${persona.edad}, Email: ${persona.email}`);
